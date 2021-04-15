@@ -1,0 +1,81 @@
+NAME : RADHIKA PATWARI
+ROLL NO : 18CS10062
+
+=====================================================================
+
+Create table commands : 
+
+1.For table 'doctor':
+CREATE TABLE doctor (
+    ID varchar(255),
+    name varchar(255),
+    date_of_birth DATE,
+    highest_degree varchar(255),
+    dep_code varchar(10),
+    PRIMARY KEY (ID),
+    FOREIGN KEY (dep_code) REFERENCES department 
+);
+
+2.For table 'patient':
+CREATE TABLE patient (
+    ID varchar(255),
+    name varchar(255),
+    house_no numeric(10,0),
+    street_no numeric(10,0),
+    street_name varchar(255),
+    city varchar(255),
+    state varchar(255),
+    pincode bigint,
+    gender varchar(10),
+    date_of_birth DATE,
+    PRIMARY KEY (ID),
+);
+
+3.For table 'department':
+CREATE TABLE department (
+    dep_code varchar(10),
+    name varchar(255),
+    HOD_name varchar(255),
+    no_of_wards bigint,
+    PRIMARY KEY (dep_code),
+);
+
+4.For table 'admission_department':
+CREATE TABLE admission_department (
+    admission_id varchar(255),
+    dep_code varchar(10),
+    FOREIGN KEY (admission_id) REFERENCES admission
+    FOREIGN KEY (dep_code) REFERENCES department 
+);
+
+5.For table 'admission':
+CREATE TABLE admission (
+    admission_id varchar(255),
+    patient_id varchar(255),
+    date_of_admission DATE,
+    date_of_release DATE,
+    PRIMARY KEY (admission_id),
+    FOREIGN KEY (patient_id) REFERENCES patient(ID) 
+);
+
+6.For table 'patient_contact':
+CREATE TABLE patient_contact (
+	patient_id varchar(255),
+	phone_number numeric(15,0),
+    FOREIGN KEY (patient_id) REFERENCES patient(ID)
+);
+
+7.For table 'assigned':
+CREATE TABLE assigned (
+   	admission_id varchar(255),
+   	doctor_id varchar(255), 
+    FOREIGN KEY (admission_id) REFERENCES admission,
+    FOREIGN KEY (doctor_id) REFERENCES doctor(ID)
+);
+
+===================================================================
+
+SQL QUERIES :
+
+1. 
+SELECT DISTINCT 

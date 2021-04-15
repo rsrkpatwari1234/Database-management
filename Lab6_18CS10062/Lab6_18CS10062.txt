@@ -1,0 +1,116 @@
+
+RADHIKA PATWARI
+18CS10062
+
+Assignment 6 : DBMS [CS43002]
+
+Tested on Mysql 8.0.23 version
+==================================================================================
+
+Assumptions : 
+1.in 'Registration' table, grade_point and marks_obtained correspond to each other.Whenever the user updates grade_point, he also updates marks_obtained.
+2.grade_point determines the cgpa and ranges from 0-10
+
+==================================================================================
+
+Answer 1 : Insert
+
+DELIMITER $$
+CREATE TRIGGER cgpa_earned_on_insert AFTER INSERT ON Registration 
+FOR EACH ROW
+BEGIN
+	UPDATE Student,
+	(SELECT sum(credits) as credit,sum(credits*grade_point) as score
+	FROM Course, Registration
+	WHERE Registration.roll_no=NEW.roll_no
+	AND Course.course_cd=Registration.course_cd) AS tot_credit
+	set cgpa=score/credit
+	where Student.roll_no=NEW.roll_no;
+END
+;
+$$
+DELIMITER ;
+
+==================================================================================
+
+Answer 1 : Delete
+
+DELIMITER $$
+CREATE TRIGGER cgpa_earned_on_delete AFTER DELETE ON Registration 
+FOR EACH ROW
+BEGIN
+	UPDATE Student,
+	(SELECT sum(credits) as credit,sum(credits*grade_point) as score
+	FROM Course, Registration
+	WHERE Registration.roll_no=OLD.roll_no
+	AND Course.course_cd=Registration.course_cd) AS tot_credit
+	set cgpa=score/credit
+	where Student.roll_no=OLD.roll_no;
+END
+;
+$$
+DELIMITER ;
+
+==================================================================================
+
+Answer 1 : Update
+
+DELIMITER $$
+CREATE TRIGGER cgpa_earned_on_update AFTER UPDATE ON Registration 
+FOR EACH ROW
+BEGIN
+	UPDATE Student,
+	(SELECT sum(credits) as credit,sum(credits*grade_point) as score
+	FROM Course, Registration
+	WHERE Registration.roll_no=NEW.roll_no
+	AND Course.course_cd=Registration.course_cd) AS tot_credit
+	set cgpa=score/credit
+	where Student.roll_no=NEW.roll_no;
+END
+;
+$$
+DELIMITER ;
+
+================================================================================
+
+Answer 2.
+
+DELIMITER $$
+create procedure update_cgpa(in student_roll_no int, out new_cgpa decimal(5,2))
+begin
+	update Student, 
+	(select sum(credits) as credit,sum(credits*grade_point) as score
+	from Course, Registration
+	where Registration.roll_no=student_roll_no
+	and Course.course_cd=Registration.course_cd) as tot_credit
+	set cgpa=score/credit
+	where Student.roll_no=student_roll_no;
+	select cgpa into new_cgpa
+	from Student
+	where Student.roll_no=student_roll_no;
+end;
+$$
+DELIMITER ;
+
+call update_cgpa(1,@ans);
+select @ans;
+================================================================================
+
+Answer 3.
+
+WITH RECURSIVE senior_managers(emp_cd,manager_emp_cd) AS
+(
+SELECT emp_cd, manager_emp_cd
+FROM Employee
+UNION
+SELECT senior_managers.emp_cd, Employee.manager_emp_cd
+FROM Employee, senior_managers
+WHERE senior_managers.manager_emp_cd=Employee.emp_cd
+)
+SELECT DISTINCT manager_emp_cd AS higher_managers
+FROM senior_managers
+WHERE senior_managers.emp_cd=5
+AND senior_managers.manager_emp_cd<>senior_managers.emp_cd
+;
+
+================================================================================

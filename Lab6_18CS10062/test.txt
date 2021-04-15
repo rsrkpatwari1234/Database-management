@@ -1,0 +1,178 @@
+NAME : RADHIKA PATWARI
+ROLL NO : 18CS10062
+
+Assignment 6 : Testing [no need to submit : pesonal testing]
+
+testing  on : https://paiza.io/projects/3ri9SMIilmrS026HhmL2nA?language=mysql
+
+=====================================================================
+
+Create table commands : 
+
+1.For table 'Student':
+
+CREATE TABLE Student(
+roll_no int,
+student_name varchar(30) not null,
+year_of_admission int,
+dept_cd char(2) not null,
+cgpa decimal(5,2),
+percentage_marks decimal(5,2), 
+hall_cd char(2),
+PRIMARY KEY (roll_no)
+)
+;
+
+2.For table 'Course':
+
+CREATE TABLE Course(
+course_cd char(5), 
+course_name varchar(30) not null, 
+credits int not null, 
+max_marks decimal(5,2) not null,
+dept_cd char(2) not null,
+PRIMARY KEY (course_cd)
+);
+
+3.For table 'Registration':
+
+CREATE TABLE Registration(
+roll_no int, 
+course_cd char(5), 
+grade_point int, 
+marks_obtained decimal(5,2),
+PRIMARY KEY (roll_no, course_cd),
+FOREIGN KEY (roll_no) REFERENCES Student(roll_no),
+FOREIGN KEY (course_cd) REFERENCES Course(course_cd)
+);
+
+4.For table 'Employee':
+
+CREATE TABLE Employee(
+emp_cd int,
+manager_emp_cd int,
+PRIMARY KEY(emp_cd,manager_emp_cd)
+);
+
+=====================================================================
+
+INSERT statements : 
+
+INSERT INTO Employee
+values
+(10,9),
+(9,8),
+(8,7),
+(7,6),
+(6,6)
+;
+
+INSERT INTO Student
+values
+(1,'Ram',2000,'ch',0,0,'Ad'),
+(2,'Shyam',1900,'ph',0,0,'ht')
+;
+
+INSERT INTO Course
+values
+(1,'dsa',4,10,'ch'),
+(2,'algo',3,10,'cs'),
+(3,'flat',2,10,'ph'),
+(4,'eng',3,10,'hs'),
+(5,'hin',5,10,'hs')
+;
+
+INSERT INTO Registration
+values
+(1,1,9,1.0),
+(1,2,8,1.0),
+(1,3,7,1.0),
+(2,1,10,1),
+(2,2,8,1)
+;
+
+=====================================================================
+
+DELETE statements : 
+
+delete from Registration;
+delete from Course;
+delete from Student;
+
+======================================================================
+
+DROP statements :
+
+drop table Employee;
+drop table Registration;
+drop table Student;
+drop table Course;
+
+
+previous : 
+DELIMITER $$ ;
+CREATE TRIGGER cgpa_earned_on_insert AFTER INSERT ON Registration 
+FOR EACH ROW
+BEGIN
+	UPDATE Student,
+	(SELECT sum(credits)
+	FROM Course, Registration
+	WHERE Registration.roll_no=NEW.roll_no
+	AND Course.course_cd=Registration.course_cd
+	AND Registration.course_cd<>NEW.course_cd) AS tot_credit(prev),
+	(SELECT credits
+	FROM Course
+	WHERE Course.course_cd=NEW.course_cd) AS course_credit(credit)
+	SET cgpa=((cgpa*tot_credit.prev)+(course_credit.credit*NEW.grade_point))/(tot_credit.prev+course_credit.credit)
+	WHERE Student.roll_no=NEW.roll_no;
+	UPDATE Student
+	SET percentage_marks=(cgpa*10)
+	WHERE Student.roll_no=NEW.roll_no;
+END
+;
+$$
+DELIMITER ; $$
+
+DELIMITER $$ ;
+CREATE TRIGGER cgpa_earned_on_delete BEFORE DELETE ON Registration 
+FOR EACH ROW
+BEGIN
+	UPDATE Student,
+	(SELECT sum(credits)
+	FROM Course, Registration
+	WHERE Registration.roll_no=OLD.roll_no
+	AND Course.course_cd=Registration.course_cd) AS tot_credit(prev),
+	(SELECT credits
+	FROM Course
+	WHERE Course.course_cd=OLD.course_cd) AS course_credit(credit)
+	SET cgpa=((cgpa*tot_credit.prev)-(course_credit.credit*OLD.grade_point))/(tot_credit.prev-course_credit.credit)
+	WHERE Student.roll_no=OLD.roll_no;
+	UPDATE Student
+	SET percentage_marks=(cgpa*10)
+	WHERE Student.roll_no=OLD.roll_no;
+END
+;
+$$
+DELIMITER ; $$
+
+DELIMITER $$ ;
+CREATE TRIGGER cgpa_earned_on_update AFTER UPDATE ON Registration 
+FOR EACH ROW
+BEGIN
+	UPDATE Student,
+	(SELECT sum(credits)
+	FROM Course, Registration
+	WHERE Registration.roll_no=OLD.roll_no
+	AND Course.course_cd=Registration.course_cd) AS tot_credit(prev),
+	(SELECT credits
+	FROM Course
+	WHERE Course.course_cd=OLD.course_cd) AS course_credit(credit)
+	SET cgpa=((cgpa*tot_credit.prev)-(course_credit.credit*OLD.grade_point)+(course_credit.credit*NEW.grade_point))/(tot_credit.prev)
+	WHERE Student.roll_no=OLD.roll_no;
+	UPDATE Student
+	SET percentage_marks=(cgpa*10)
+	WHERE Student.roll_no=OLD.roll_no;
+END
+;
+$$
+DELIMITER ; $$

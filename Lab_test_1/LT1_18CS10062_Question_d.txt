@@ -1,0 +1,60 @@
+NAME : RADHIKA PATWARI
+ROLL NO : 18CS10062
+Lab test 1 : dbms : Question d
+
+=====================================================================
+
+Create table commands : 
+
+1.For table 'CS10062_ptr':
+
+CREATE TABLE CS10062_ptr(
+painter_id varchar(255),
+painter_name varchar(255),
+date_of_birth DATE,
+PRIMARY KEY (painter_id)
+);
+
+2.For table 'CS10062_gt':
+
+CREATE TABLE CS10062_gt(
+generation_of_painting varchar(255),
+start_date DATE,
+end_date DATE,
+PRIMARY KEY (generation_of_painting)
+);
+
+3.For table 'CS10062_ptg':
+
+CREATE TABLE CS10062_ptg(
+painting_id varchar(255),
+painting_name varchar(255),
+painting_medium char(20) check(painting_medium in('paper','canvas','board')),
+completion_date date,
+generation_of_painting varchar(255),
+painter_id varchar(255),
+PRIMARY KEY (painting_id),
+FOREIGN KEY (generation_of_painting) REFERENCES CS10062_gt(generation_of_painting),
+FOREIGN KEY (painter_id) REFERENCES CS10062_ptr(painter_id) 
+);
+
+
+4.For table 'CS10062_loc':
+
+CREATE TABLE CS10062_loc(
+floor_no int,
+room_no int,
+capacity int,
+PRIMARY KEY(floor_no,room_no) 
+);
+
+5.For table 'CS10062_ptl':
+
+CREATE TABLE CS10062_ptl(
+floor_no int,
+room_no int,
+painting_id varchar(255),
+PRIMARY KEY (painting_id),
+FOREIGN KEY (painting_id) REFERENCES CS10062_ptg(painting_id),
+FOREIGN KEY (floor_no,room_no) REFERENCES CS10062_loc(floor_no,room_no)
+);

@@ -1,0 +1,162 @@
+18CS10062 RADHIKA PATWARI
+
+SET A, SET B, SET D, SET F, SET G, SET I, SET K, SET L, SET O, SET P
+
+----------------------- QUERY 1 ------------------------------------------
+
+A.2
+SELECT A.RNo as RId,A.RName as RName,B.RNo as FId,B.RName FName,Course.CId as CId,Course.CName as CName
+FROM RegUser as A, RegUser as B, CourseReg, Course, Faculty
+WHERE A.HigheshQual='BTECH'
+AND CourseReg.RNo=RegUser.RNo
+AND Course.CId=CourseReg.CId
+AND Course.FId is not null
+AND Faculty.FId=Course.FId
+AND B.RNo=Faculty.FId 
+;
+
+Assumption : Given in question that find users along with courses they are enrolled in and their faculty
+
+Ignoring the users with highest qualification as 'BTECH' who are currently not enrolled in any course.
+Ignoring the users with highest qualification as 'BTECH' who have a course that has no faculty assigned to it (i.e., Course.FId is null) 
+
+----------------------- QUERY 2 ------------------------------------------
+
+B.2
+
+SELECT RegUser.RNo as RId, RegUser.RName as RName, CourseReg.CId as CId, Course.CName as CName, CourseReg.Score as Score
+FROM CourseReg LEFT OUTER JOIN Course on CourseReg.CId=Course.CId, RegUser
+WHERE Course.CDept='CS'
+AND RegUser.RNo=CourseReg.RNo
+AND RegUser.HigheshQual='BTECH'
+AND RegUser.RDept='CS'
+ORDER BY CourseReg.Score
+LIMIT 5
+;
+
+Assumption : RegUser has a colummn 'RDept'
+
+----------------------- QUERY 3 ------------------------------------------
+
+D.2
+
+SELECT Course.CId as Cid,Course.CName as CName,Course.CDuration as CDuration, Faculty.FId as FId, RegUser.RName as FName,Faculty.FDept as FDept,Faculty.ResearchArea as ResearchArea,RegUser.HighestQual as HighestQual
+FROM Course INNER JOIN Faculty ON Course.FId=Faculty.FId, RegUser
+WHERE Course.CDuration='LONG'
+Faculty.ResearchArea='ALGO'
+AND Faculty.FDept='EE'
+AND RegUser.RNo=Faculty.FId
+AND RegUser.HighestQual='MTECH'
+;
+
+Assumption : ignoring courses with LONG duration having no faculty
+
+----------------------- QUERY 4 ------------------------------------------
+
+F.2
+SELECT DISTINCT A.CId, A.CName
+FROM Course as A, Prerequisite, Course as B
+WHERE A.CDept='ECE'
+AND Prerequisite.CId=A.CId
+AND B.CId=Prerequisite.CId
+AND B.CDept='EE'
+;
+
+Assumption : printing only distinct courses, as one course may be repeated multiple times in this query
+
+----------------------- QUERY 5 ------------------------------------------
+
+G.2
+
+SELECT Faculty.FId,Faculty.FDept,Course.CId,Course.CDept
+FROM Faculty,Course,
+(SELECT Faculty.FId, COUNT(Course.CId)
+FROM Faculty, Course
+WHERE Course.CDuration='SHORT'
+AND Course.FId=Faculty.FId
+GROUP BY Faculty.FId
+) AS CourseCount(id,ctr)
+WHERE CourseCount.ctr<4
+AND Faculty.FId=CourseCount.id
+AND Course.FId=Faculty.FId
+;
+
+----------------------- QUERY 6 ------------------------------------------
+
+I.2
+SELECT DISTINCT RegUser.RNo, RegUser.RName, RegUser.ROccu,RegUser.HighestQual, Faculty.FDept, Faculty.ResearchArea,Course.CId, Course.CName, Course.CDuration
+FROM RegUser, Course, Faculty
+WHERE RegUser.HighestQual='PHD'
+Faculty.FId=RegUser.FId
+AND Faculty.FDept='ECE'
+AND (Faculty.ResearchArea='DBMS' OR Faculty.ResearchArea='AI')
+AND Course.FId=Faculty.FId
+AND Course.CDuration='MEDIUM'
+;
+
+----------------------- QUERY 7 ------------------------------------------
+
+K.2
+SELECT DISTINCT RegUser.RNo,RegUser.RName
+FROM RegUser,CourseReg,Course,Faculty,Prerequisite
+WHERE RegUser.RNo=CourseReg.RNo
+AND Course.CId=CourseReg.CId
+AND Faculty.FId=Course.FId
+AND Faculty.ResearchArea='ML'
+AND Prerequisite.CId=Course.CId
+AND Prerequisite.PreqCId IN
+(SELECT Course.CId
+FROM Course,Faculty
+WHERE Faculty.FId=Course.FId
+AND Faculty.FDept='ECE'
+AND (Course.CDuration='LONG' OR Course.CDuration='MEDIUM'))
+;
+
+----------------------- QUERY 8 ------------------------------------------
+
+L.2
+
+SELECT Fac.id as FId, RegUser.RName as FName
+FROM RegUser,(SELECT Faculty.FId,COUNT(Course.CId)
+FROM Faculty,Course
+WHERE Faculty.FId=Course.FId
+AND Course.CId IN(
+	SELECT Course.CId
+	FROM Course,Prerequisite
+	WHERE Course.CDuration='LONG'
+	AND (Course.CDept='CSE' OR Course.CDept='ML')
+	AND Prerequisite.CId=Course.CId 
+	AND Prerequisite.PreqCId NOT IN(SELECT CId FROM PREREQUISITE)
+)
+GROUP BY Faculty.FId) AS Fac(id,ctr)
+WHERE Fac.ctr<2
+AND RegUser.RNo=Fac.id
+;
+
+Assumption : Faculty table has no attribute 'FName'
+
+----------------------- QUERY 9 ------------------------------------------
+
+O.2
+
+SELECT DISTINCT Course.CId,Course.CName,CONCAT(A.val,':',B.val) as  Ratio
+FROM Course,(SELECT CId,max(Score) FROM CourseReg GROUP BY CId) as A(id,val),(SELECT CId,min(Score) FROM CourseReg GROUP BY CId) as B(id,val) 
+WHERE Course.CDept='EE'
+AND A.id=Course.CId
+AND B.id=Course.CId
+;
+
+
+----------------------- QUERY 10 ------------------------------------------
+
+P.2
+
+SELECT DISTINCT Fac1.dep,CONCAT(Fac1.ctr,':',Fac2.ctr) as Ratio
+FROM (SELECT Faculty.FDept,COUNT(Faculty.FId)
+FROM Faculty
+GROUP BY Faculty.FDept
+HAVING Faculty.ResearchArea='AI') AS  Fac1(dep,ctr),
+(SELECT Faculty.FDept,COUNT(Faculty.FId)
+FROM Faculty
+GROUP BY Faculty.FDept) AS  Fac2(dep,ctr)
+WHERE Fac1.dep=Fac2.dep

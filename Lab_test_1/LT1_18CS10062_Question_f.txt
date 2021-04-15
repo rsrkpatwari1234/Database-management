@@ -1,0 +1,87 @@
+NAME : RADHIKA PATWARI
+ROLL NO : 18CS10062
+Lab test 1 : dbms : Question f
+
+=====================================================================
+
+INSERT statements : 
+
+INSERT INTO CS10062_gt
+values('Renaissance','1998-01-01',NULL),('Victorian','1992-01-01',NULL),('Cubic','1994-06-02',NULL),
+('Impressionistic','1992-06-02','2000-01-01')
+;
+
+INSERT INTO CS10062_ptr
+values
+(100,'leonard','1980-01-01'),
+(101,'antonio','1978-01-01'),
+(102,'basanio','1977-01-01'),
+(103,'portia','1950-01-01'),
+(104,'levinci','1921-01-01'),
+(105,'monalisa','1900-01-01')
+;
+
+INSERT INTO CS10062_ptg values(0,'apple','paper','2002-01-01','Renaissance','100'),(1,'mango','canvas','2000-01-01','Victorian','100'),(2,'flower','paper','2001-01-01','Renaissance','101'),(3,'chocolate','canvas','1999-01-01','Cubic','102'),(4,'lamp','canvas','2001-01-01','Cubic','102'),(5,'mouse','paper','2001-01-01','Cubic','102'),(6,'paper','canvas','2001-01-01','Cubic','103'),(7,'light','canvas','2001-01-01','Cubic','103'),(8,'cake','paper','2001-01-01','Cubic','103'),(9,'alarm','paper','2001-01-02','Renaissance','104'),(10,'tree','paper','2001-01-02','Impressionistic','104');
+
+INSERT INTO CS10062_loc values
+(1,1,4),
+(1,2,6),
+(2,1,2),
+(2,2,3),
+(2,4,3),
+(2,3,3),
+(2,5,3)
+;
+
+INSERT INTO CS10062_ptl values
+(1,1,0),
+(1,2,1),
+(2,1,3),
+(2,2,5),
+(2,4,4),
+(2,3,7),
+(2,5,8)
+;
+
+
+=====================================================================
+
+SELECT statements : 
+
+SELECT floor_no,room_no,CS10062_ptr.painter_id,CS10062_ptr.painter_name,CS10062_ptg.painting_id, painting_name,completion_date,CS10062_ptg.generation_of_painting,start_date
+FROM CS10062_ptg,CS10062_ptr,CS10062_gt,CS10062_ptl
+WHERE CS10062_ptg.completion_date is not null
+AND CS10062_gt.generation_of_painting=CS10062_ptg.generation_of_painting
+AND CS10062_gt.end_date is null
+AND CS10062_ptr.painter_id=CS10062_ptg.painter_id
+AND CS10062_ptl.painting_id=CS10062_ptg.painting_id
+;
+
+=====================================================================
+
+Query output : [using mysql Server version: 5.7.32-0ubuntu0.16.04.1 (Ubuntu)]
+
+
++----------+---------+------------+--------------+-------------+---------------+-----------------+------------------------+------------+
+| floor_no | room_no | painter_id | painter_name | painting_id | painting_name | completion_date | generation_of_painting | start_date |
++----------+---------+------------+--------------+-------------+---------------+-----------------+------------------------+------------+
+|        2 |       1 | 102        | basanio      | 3           | chocolate     | 1999-01-01      | Cubic                  | 1994-06-02 |
+|        2 |       4 | 102        | basanio      | 4           | lamp          | 2001-01-01      | Cubic                  | 1994-06-02 |
+|        2 |       2 | 102        | basanio      | 5           | mouse         | 2001-01-01      | Cubic                  | 1994-06-02 |
+|        2 |       3 | 103        | portia       | 7           | light         | 2001-01-01      | Cubic                  | 1994-06-02 |
+|        2 |       5 | 103        | portia       | 8           | cake          | 2001-01-01      | Cubic                  | 1994-06-02 |
+|        1 |       1 | 100        | leonard      | 0           | apple         | 2002-01-01      | Renaissance            | 1998-01-01 |
+|        1 |       2 | 100        | leonard      | 1           | mango         | 2000-01-01      | Victorian              | 1992-01-01 |
++----------+---------+------------+--------------+-------------+---------------+-----------------+------------------------+------------+
+7 rows in set (0.00 sec)
+
+
+=====================================================================
+
+DELETE statements : 
+
+delete from CS10062_ptl;
+delete from CS10062_ptg;
+delete from CS10062_loc;
+delete from CS10062_ptr;
+delete from CS10062_gt;

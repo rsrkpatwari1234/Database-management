@@ -1,0 +1,65 @@
+NAME : RADHIKA PATWARI
+ROLL NO : 18CS10062
+Lab test 1 : dbms : Question e
+
+=====================================================================
+
+INSERT statements : 
+
+INSERT INTO CS10062_gt
+values
+('Renaissance','1998-01-01',NULL),
+('Victorian','1992-01-01',NULL),
+('Cubic','1994-06-02',NULL)
+;
+
+INSERT INTO CS10062_ptr
+values
+(100,'leonard','1980-01-01'),
+(101,'antonio','1978-01-01'),
+(102,'basanio','1977-01-01'),
+(103,'portia','1950-01-01'),
+(104,'levinci','1921-01-01'),
+(105,'monalisa','1900-01-01')
+;
+
+INSERT INTO CS10062_ptg values(0,'apple','paper',NULL,'Renaissance','100'),(1,'mango','canvas','2000-01-01','Victorian','100'),(2,'flower','paper',NULL,'Renaissance','101'),(3,'chocolate','canvas',NULL,'Cubic','102'),(4,'lamp','canvas',NULL,'Cubic','102'),(5,'mouse','paper',NULL,'Cubic','102'),(6,'paper','canvas',NULL,'Cubic','103'),(7,'light','canvas',NULL,'Cubic','103'),(8,'cake','paper',NULL,'Cubic','103'),(9,'alarm','paper','2001-01-02','Renaissance','104');
+
+=====================================================================
+
+SELECT statements : 
+
+SELECT CS10062_ptg.painter_id, painter_name, date_of_birth, painting_id, painting_name,painting_medium, completion_date, CS10062_ptg.generation_of_painting, start_date, end_date 
+FROM CS10062_ptg,CS10062_ptr,CS10062_gt
+WHERE CS10062_ptg.painter_id IN(SELECT painter_id FROM CS10062_ptg GROUP BY painter_id HAVING count(*)>=2)
+AND CS10062_gt.generation_of_painting=CS10062_ptg.generation_of_painting
+AND CS10062_ptr.painter_id=CS10062_ptg.painter_id
+;
+
+
+=====================================================================
+
+Query output : [using mysql Server version: 5.7.32-0ubuntu0.16.04.1 (Ubuntu)]
+
+
++------------+--------------+---------------+-------------+---------------+-----------------+-----------------+------------------------+------------+----------+
+| painter_id | painter_name | date_of_birth | painting_id | painting_name | painting_medium | completion_date | generation_of_painting | start_date | end_date |
++------------+--------------+---------------+-------------+---------------+-----------------+-----------------+------------------------+------------+----------+
+| 100        | leonard      | 1980-01-01    | 0           | apple         | paper           | NULL            | Renaissance            | 1998-01-01 | NULL     |
+| 100        | leonard      | 1980-01-01    | 1           | mango         | canvas          | 2000-01-01      | Victorian              | 1992-01-01 | NULL     |
+| 102        | basanio      | 1977-01-01    | 3           | chocolate     | canvas          | NULL            | Cubic                  | 1994-06-02 | NULL     |
+| 102        | basanio      | 1977-01-01    | 4           | lamp          | canvas          | NULL            | Cubic                  | 1994-06-02 | NULL     |
+| 102        | basanio      | 1977-01-01    | 5           | mouse         | paper           | NULL            | Cubic                  | 1994-06-02 | NULL     |
+| 103        | portia       | 1950-01-01    | 6           | paper         | canvas          | NULL            | Cubic                  | 1994-06-02 | NULL     |
+| 103        | portia       | 1950-01-01    | 7           | light         | canvas          | NULL            | Cubic                  | 1994-06-02 | NULL     |
+| 103        | portia       | 1950-01-01    | 8           | cake          | paper           | NULL            | Cubic                  | 1994-06-02 | NULL     |
++------------+--------------+---------------+-------------+---------------+-----------------+-----------------+------------------------+------------+----------+
+8 rows in set (0.10 sec)
+
+=====================================================================
+
+DELETE statements : 
+
+delete from CS10062_ptg;
+delete from CS10062_ptr;
+delete from CS10062_gt;
