@@ -12,7 +12,6 @@ The repository contains the slides, books and lab assignments of the Database an
 |- Lab_4_18CS10062 : question paper + solution 
 |- Lab_6_18CS10062 : question paper + solution 
 |- Lab_7_18CS10062 : question paper + solution 
-
 ```
 
 ## Installing Oracle in Ubuntu 16.04
